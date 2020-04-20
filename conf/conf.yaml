@@ -1,0 +1,6 @@
+name: "deep_learning_facial_recognition"
+data:
+  input:
+    path: "data/raw/"
+  output:
+    path: "data/by_age"
