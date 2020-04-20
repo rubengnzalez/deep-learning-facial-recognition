@@ -55,3 +55,14 @@ def init_logger(cfg, name=None, level=logging.INFO):
         f_handler.setFormatter(logging.Formatter(f))
         logger.addHandler(f_handler)
     return logger
+
+
+def create_dir(full_path, exists_ok=True):
+    """
+    Wrapper of os.makedirs, more human readable
+    :param full_path: Path to the folder to be created
+    :param exists_ok: If the target directory already exists, an OSError is
+     raised when variable set as True
+    :return:
+    """
+    return os.makedirs(os.path.dirname(full_path), exist_ok=exists_ok)

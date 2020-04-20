@@ -4,11 +4,13 @@ preprocessor:
     input:
       path: "data/raw/"
     output:
+      photo_name_format: "age_gender_race_datetime.jpg"
+      criteria: "age"
       path: "data/by_age"
       groups:
-        bebe_1:
+        baby_1:
           - 1
-        bebe_2:
+        baby_2:
           - 2
 logging:
   file_handler: True
