@@ -1,6 +1,17 @@
 name: "deep_learning_facial_recognition"
-data:
-  input:
-    path: "data/raw/"
-  output:
-    path: "data/by_age"
+preprocessor:
+  data:
+    input:
+      path: "data/raw/"
+    output:
+      path: "data/by_age"
+      groups:
+        bebe_1:
+          - 1
+        bebe_2:
+          - 2
+logging:
+  file_handler: True
+  level: "INFO"
+  path: "log/"
+  file_name: "facial_recognition_{date}.log"
