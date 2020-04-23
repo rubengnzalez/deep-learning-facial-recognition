@@ -24,8 +24,9 @@ def classify_images_in_folders(
     if os.path.exists(full_input_path) and os.path.exists(full_output_path):
         crit_path = os.path.join(full_output_path, criteria)
         crit_index = file_name_format.split('_').index(criteria)
+        # TODO: REMOVE CONTENTS ON CRIT_PATH IN CASE IT EXISTS TO ENSURE IT WILL CONTAIN ONLY FILES COPIED THERE LATER
         if not os.path.exists(crit_path):
-            create_dir(crit_path)
+            create_dir(crit_path)  # TODO: VALORAR CAMBIAR NOMBRE CLASE POR VALOR NUMÉRICO
         for r, d, f in os.walk(full_input_path):
             for file in f:
                 if os.path.isfile(os.path.join(r, file)):
@@ -35,10 +36,11 @@ def classify_images_in_folders(
                             if not os.path.exists(os.path.join(crit_path, k)):
                                 create_dir(os.path.join(crit_path, k))
                             copy_file(os.path.join(r, file),
-                                      os.path.join(crit_path, k))
-                    pass
+                                      os.path.join(crit_path, k))  # TODO: CHANGE NAME OF DESTINATION FILE (ONLY IF NEEDED)
     else:
-        raise ex.PreprocessingException('blabablabla', )
+        raise ex.PreprocessingException(
+            'An error occurred while classifying images in their '
+            'corresponding folders')
 
 
 if __name__ == '__main__':
