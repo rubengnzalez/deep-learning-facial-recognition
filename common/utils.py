@@ -38,7 +38,7 @@ def init_logger(cfg, name=None, level=logging.INFO):
     :param cfg: Configuration dict
     :param name: name of the logger
     :param level: logging level
-    :return:
+    :return: Logger instance
     """
     name = name if name else cfg['name']
     f = '%(asctime)s|%(levelname)s|' + name + \
@@ -68,16 +68,14 @@ def create_dir(full_path, exists_ok=True):
     :param full_path: Path to the folder to be created
     :param exists_ok: If the target directory already exists, an OSError is
      raised when variable set as True
-    :return:
     """
     os.makedirs(full_path, exist_ok=exists_ok)
 
 
 def copy_file(orig, dest):
     """
-# TODO:  ############################################################################
-    :param orig:
-    :param dest:
-    :return:
+    Copies a file from given origin path into given destination path
+    :param orig: Origin path (including file name)
+    :param dest: Destination path (including file name)
     """
     shutil.copy(orig, dest)
