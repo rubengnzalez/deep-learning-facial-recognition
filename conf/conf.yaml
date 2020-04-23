@@ -3,15 +3,23 @@ preprocessor:
   data:
     input:
       path: "data/raw/"
+      file_name_format: "age_gender_race_datetime.extension"
     output:
-      photo_name_format: "age_gender_race_datetime.jpg"
       criteria: "age"
-      path: "data/by_age"
-      groups:
-        baby_1:
+      path: "data/"
+      classes:
+        baby:
           - 1
-        baby_2:
-          - 2
+          - 3
+        youth:
+          - 4
+          - 10
+        youth_2:
+          - 11
+          - 20
+        adult:
+          - 21
+          - 35
 logging:
   file_handler: True
   level: "INFO"

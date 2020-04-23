@@ -1,10 +1,15 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
+__author__ = 'Ruben Gonzalez Lozano'
+__email__ = '100284010@alumnos.uc3m.es'
+
 import yaml
 import os
+import shutil
 import logging
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
-from common import Exceptions as ex
+from common import exceptions as ex
 
 
 def load_config(path, section=None):
@@ -22,9 +27,9 @@ def load_config(path, section=None):
         elif section in cfg.keys():
             return cfg[section]
         raise ex.ConfigurationException(
-            "Section: '{s}' not found in configuration file".format(s=section))
+            'Section: {s} not found in configuration file'.format(s=section))
     raise ex.ConfigurationException(
-        "Configuration file type is unknown: {p}".format(p=path))
+        'Configuration file type is unknown: {p}'.format(p=path))
 
 
 def init_logger(cfg, name=None, level=logging.INFO):
@@ -36,8 +41,8 @@ def init_logger(cfg, name=None, level=logging.INFO):
     :return:
     """
     name = name if name else cfg['name']
-    f = "%(asctime)s|%(levelname)s|" + name + \
-        "|%(process)d|%(thread)d|%(filename)s|%(funcName)s|%(message)s"
+    f = '%(asctime)s|%(levelname)s|' + name + \
+        '|%(process)d|%(thread)d|%(filename)s|%(funcName)s|%(message)s'
     c_handler = logging.StreamHandler()
     c_handler.setFormatter(logging.Formatter(f))
     logger = logging.getLogger(name)
@@ -65,4 +70,14 @@ def create_dir(full_path, exists_ok=True):
      raised when variable set as True
     :return:
     """
-    return os.makedirs(os.path.dirname(full_path), exist_ok=exists_ok)
+    os.makedirs(full_path, exist_ok=exists_ok)
+
+
+def copy_file(orig, dest):
+    """
+# TODO:  ############################################################################
+    :param orig:
+    :param dest:
+    :return:
+    """
+    shutil.copy(orig, dest)
