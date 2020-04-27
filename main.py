@@ -11,9 +11,10 @@ if __name__ == '__main__':
     logger = init_logger(cfg['logging'], cfg['logging']['name'])
     logger.info(cfg)
     prep = Preprocessor(cfg['logging']['name'])
-    prep.classify_data_in_folders(
-        cfg['preprocessor']['classifier']['input']['path'],
-        cfg['preprocessor']['classifier']['input']['file_name_format'],
-        cfg['preprocessor']['classifier']['output']['criteria'],
-        cfg['preprocessor']['classifier']['output']['path'],
-        cfg['preprocessor']['classifier']['output']['classes'])
+    prep.prepare_data_in_folders(
+        cfg['preprocessor']['prepare']['input']['path'],
+        cfg['preprocessor']['prepare']['input']['file_name_format'],
+        cfg['preprocessor']['prepare']['output']['criteria'],
+        cfg['preprocessor']['prepare']['output']['path'],
+        cfg['preprocessor']['prepare']['output']['classes'])
+    

@@ -22,7 +22,7 @@ class Preprocessor:
         self.__logger = logging.getLogger(logger_name)
         pass
 
-    def classify_data_in_folders(self, input_path, file_name_format, criteria,
+    def prepare_data_in_folders(self, input_path, file_name_format, criteria,
                                  output_path, classes):
         """
     # TODO:  ############################################################################
