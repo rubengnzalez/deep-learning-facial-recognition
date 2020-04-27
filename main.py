@@ -9,7 +9,6 @@ from preprocessor import Preprocessor
 if __name__ == '__main__':
     cfg = load_config('./conf/conf.yaml')
     logger = init_logger(cfg['logging'], cfg['logging']['name'])
-    logger.info(cfg)
     prep = Preprocessor(cfg['logging']['name'])
     prep.prepare_data_in_folders(
         cfg['preprocessor']['prepare']['input']['path'],
@@ -17,4 +16,3 @@ if __name__ == '__main__':
         cfg['preprocessor']['prepare']['output']['criteria'],
         cfg['preprocessor']['prepare']['output']['path'],
         cfg['preprocessor']['prepare']['output']['classes'])
-    

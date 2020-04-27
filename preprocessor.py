@@ -22,8 +22,9 @@ class Preprocessor:
         self.__logger = logging.getLogger(logger_name)
         pass
 
-    def prepare_data_in_folders(self, input_path, file_name_format, criteria,
-                                 output_path, classes):
+    @staticmethod
+    def prepare_data_in_folders(input_path, file_name_format, criteria,
+                                output_path, classes, logger_name='log'):
         """
     # TODO:  ############################################################################
         :param input_path:
@@ -31,9 +32,11 @@ class Preprocessor:
         :param criteria:
         :param output_path:
         :param classes:
+        :param logger_name:
         :return:
         """
-        self.__logger.info(
+        logger = logging.getLogger(logger_name)
+        logger.info(
             'Classifying images into their corresponding folders according to '
             'criteria "{crit}" and the following classes distribution: {clas}'
             ''. format(crit=criteria, clas=classes))
@@ -63,6 +66,9 @@ class Preprocessor:
                                               crit_path,
                                               str(k),
                                               file.split('.')[0] + ext))
+            logger.info('Data prepared in their corresponding directories '
+                        'under main path {path} successfully'
+                        ''.format(path=crit_path))
         else:
             raise PreprocessorException(
                 'An error occurred while classifying images in their '
