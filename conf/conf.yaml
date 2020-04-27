@@ -1,6 +1,6 @@
 name: "deep_learning_facial_recognition"
 preprocessor:
-  data:
+  classifier:
     input:
       path: "data/raw/"
       file_name_format: "age_gender_race_datetime.extension"

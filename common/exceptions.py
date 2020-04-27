@@ -9,10 +9,3 @@ class ConfigurationException(Exception):
     Exception to be raised in case that Configuration is not loaded properly
     """
     pass
-
-
-class PreprocessingException(Exception):
-    """
-    Exception to be raised if an error occurs during a Preprocessing task
-    """
-    pass
