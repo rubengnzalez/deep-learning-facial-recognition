@@ -5,6 +5,7 @@ __email__ = '100284010@alumnos.uc3m.es'
 
 import yaml
 import os
+import sys
 import shutil
 import logging
 from datetime import datetime
@@ -32,7 +33,7 @@ def load_config(path, section=None):
         'Configuration file type is unknown: {p}'.format(p=path))
 
 
-def init_logger(cfg, name=None, level=logging.INFO):
+def init_logger(cfg, name='log', level=logging.INFO):
     """
     Initialize Logger based on configuration passed as argument
     :param cfg: Configuration dict
@@ -62,20 +63,48 @@ def init_logger(cfg, name=None, level=logging.INFO):
     return logger
 
 
-def create_dir(full_path, exists_ok=True):
+def create_dir(full_path, logger_name='log'):
     """
     Wrapper of os.makedirs, more human readable
     :param full_path: Path to the folder to be created
-    :param exists_ok: If the target directory already exists, an OSError is
-     raised when variable set as True
+    :param logger_name: logger name
     """
-    os.makedirs(full_path, exist_ok=exists_ok)
+    logger = logging.getLogger(logger_name)
+    try:
+        os.makedirs(full_path, exist_ok=True)
+    except OSError as e:
+        logger.error('Error while creating directory {path}: {err}'.format(
+                path=full_path, err=e.strerror))
+        sys.exit(1)
 
 
-def copy_file(orig, dest):
+def copy_file(orig, dest, logger_name='log'):
     """
     Copies a file from given origin path into given destination path
     :param orig: Origin path (including file name)
     :param dest: Destination path (including file name)
+    :param logger_name: logger name
     """
-    shutil.copy(orig, dest)
+    logger = logging.getLogger(logger_name)
+    try:
+        shutil.copy(orig, dest)
+    except OSError as e:
+        logger.error('Error while copying file from {orig} to {dest}: '
+                     '{err}'.format(orig=orig, dest=dest, err=e.strerror))
+        sys.exit(1)
+
+
+def remove_dir(dir_path, logger_name='log'):
+    """
+    Removes the directory passed by argument
+    :param dir_path: path to the directory
+    :param logger_name: logger name
+    :return:
+    """
+    logger = logging.getLogger(logger_name)
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        logger.error('Error while removing directory {path}: {err}'.format(
+                path=dir_path, err=e.strerror))
+        sys.exit(1)
