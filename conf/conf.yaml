@@ -1,5 +1,8 @@
 name: "deep_learning_facial_recognition"
-preprocessor:
+analysis:
+  input:
+    path: 'data/age'
+preprocess:
   prepare:
     input:
       path: "data/raw/"
@@ -368,8 +371,13 @@ preprocessor:
         120:
           - 120
           - 120
+  augmentation:
+    input:
+      path: "data/"
+    output:
+      path: "data/augmented"
 logging:
-  name: 'log'
+  name: "log"
   file_handler: True
   level: "INFO"
   path: "log/"
