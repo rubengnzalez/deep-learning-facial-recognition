@@ -2,6 +2,6 @@
 data/
 common/__pycache__/
 __pycache__/
-notebooks/.ipynb_checkpoints/
 log/
 figures/
+notebooks/.ipynb_checkpoints/Analyze-checkpoint.ipynb
