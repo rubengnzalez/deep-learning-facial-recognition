@@ -16,10 +16,11 @@ from common.utils import init_logger, load_config, create_dir
 
 def load_data(data_path, logger_name='log'):
     """
-    # TODO: #######################################################################
-    :param data_path:
-    :param logger_name:
-    :return:
+    Function to load data from a given data path. It expects the data to be
+    already sorted out in their corresponding class folders
+    :param data_path: Path to data
+    :param logger_name: Name of Logger instance
+    :return: tuple (images, labels)
     """
     log = logging.getLogger(logger_name)
     log.info('Analysis - Loading data from path [{}]'.format(data_path))
@@ -42,10 +43,12 @@ def load_data(data_path, logger_name='log'):
 
 def data_summary(np_data, flags=True, logger_name='log'):
     """
-    # TODO: #########################################################################
-    :param np_data:
-    :param flags:
-    :param logger_name:
+    Function that prints a summary of the data loaded. It will provide
+    information like shape of the dataset, dimension, total bytes it uses,
+    flags...
+    :param np_data: Data in a NumPy Array
+    :param flags: it determines if Flags should be displayed of not
+    :param logger_name: Name of Logger instance
     """
     log = logging.getLogger(logger_name)
     summary = 'Analysis - Data Summary [Np_Dim: {0}, Np_Bytes: {1}, ' \
@@ -61,12 +64,13 @@ def data_summary(np_data, flags=True, logger_name='log'):
 
 def save_figure(fig, path, name, append_date=True, logger_name='log'):
     """
-    # TODO: ##########################################################################
-    :param fig:
-    :param path:
-    :param name:
-    :param append_date:
-    :param logger_name:
+    Function that saves the figure passed as param in the path given.
+    :param fig: Figure object that will be saved as image
+    :param path: Target path
+    :param name: Name of the image
+    :param append_date: Boolean that specifies if date should be appended
+    to image name
+    :param logger_name: Name of Logger instance
     """
     log = logging.getLogger(logger_name)
     if not os.path.exists(path):
@@ -83,11 +87,10 @@ def save_figure(fig, path, name, append_date=True, logger_name='log'):
 
 def show_data_distribution(labels, save_path=None, logger_name='log'):
     """
-    # TODO: ###########################################################################
-    :param labels:
-    :param save_path:
-    :param logger_name:
-    :return:
+    Function that shows a histogram regarding to data distribution by classes
+    :param labels: Array containing 1 label per image
+    :param save_path: Path to save the figure
+    :param logger_name: Name of Logger instance
     """
     log = logging.getLogger(logger_name)
     unique_labels = set(labels)
@@ -105,12 +108,15 @@ def show_data_distribution(labels, save_path=None, logger_name='log'):
 
 def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
     """
-    # TODO: #########################################################################
-    :param images:
-    :param nrows:
-    :param ncols:
-    :param save_path:
-    :param logger_name:
+    Function that shows a sample of the data loaded. This is just to verify
+    that data has been loaded properly. Number of rows and columns of the
+    figure will be passed as argument.
+    Images displayed will be chosen randomly in each execution
+    :param images: Array containing images
+    :param nrows: rows to be displayed
+    :param ncols: cols to be displayed in each row
+    :param save_path: Path to save the figure
+    :param logger_name: Name of Logger instance
     """
     log = logging.getLogger(logger_name)
     log.info('Analysis - Showing a sample of images: {} rows x {} cols'
@@ -129,11 +135,12 @@ def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
 
 def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
     """
-    # TODO: ###########################################################################
-    :param images:
-    :param labels:
-    :param save_path:
-    :param logger_name:
+    Function that shows a sample of the data, with 1 image per class.
+    It will display a randomly chosen image for each class
+    :param images: Array containing images
+    :param labels: Array containing labels
+    :param save_path: Path to save the figure
+    :param logger_name: Name of Logger instance
     """
     log = logging.getLogger(logger_name)
     unique_labels = set(labels)

@@ -24,8 +24,8 @@ def prepare_data_in_folders(input_path, file_name_format, criteria,
     :param logger_name:
     :return:
     """
-    logger = logging.getLogger(logger_name)
-    logger.info(
+    log = logging.getLogger(logger_name)
+    log.info(
         'Classifying images into their corresponding folders according to '
         'criteria "{crit}" and the following classes distribution: {clas}'
         ''. format(crit=criteria, clas=classes))
