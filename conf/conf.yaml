@@ -2,6 +2,8 @@ name: "deep_learning_facial_recognition"
 analysis:
   input:
     path: 'data/age'
+  sample_rows: 1
+  sample_cols: 8
   figures:
     save_path: 'figures'
 preprocess:

@@ -81,6 +81,28 @@ def save_figure(fig, path, name, append_date=True, logger_name='log'):
         os.path.join(path, name)))
 
 
+def show_data_distribution(labels, save_path=None, logger_name='log'):
+    """
+    # TODO: ###########################################################################
+    :param labels:
+    :param save_path:
+    :param logger_name:
+    :return:
+    """
+    log = logging.getLogger(logger_name)
+    unique_labels = set(labels)
+    log.info('Analysis - Showing data distribution histogram: {} items and '
+             ' {} unique classes were found'.format(len(labels),
+                                                    len(unique_labels)))
+
+    fig, ax = plt.subplots()
+    ax.hist(labels, len(unique_labels))
+    ax.set_title('Data Distribution')
+    fig.show()
+    if save_path:
+        save_figure(fig, save_path, 'sample_by_classes')
+
+
 def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
     """
     # TODO: #########################################################################
@@ -100,7 +122,7 @@ def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
         axs[i].imshow(images[rand_images[i]])
         axs[i].set_title('Example {}'.format(i + 1))
         axs[i].set_axis_off()
-    plt.show()
+    fig.show()
     if save_path:
         save_figure(fig, save_path, 'sample')
 
@@ -133,7 +155,7 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
         # axs[row, col].set_axis_off()
         j += 1
         i = i if j % ncols != 0 else i + 1
-    plt.show()
+    fig.show()
     if save_path:
         save_figure(fig, save_path, 'sample_by_classes')
 
@@ -143,14 +165,10 @@ if __name__ == '__main__':
     cfg_an = load_config('./conf/conf.yaml', section='analysis')
     logger = init_logger(cfg_log, cfg_log['name'])
     ims, labs = load_data(cfg_an['input']['path'])
-    # images = np.array(images)
     data_summary(np.array(ims))
-    plt.hist(labs, len(set(labs)))
-    plt.show()  # TODO: This should be created as done in other functions! Create a fig and manipulate it as preferred
     fig_path = cfg_an['figures']['save_path']
-    show_sample(ims, 1, 6, save_path=cfg_an['figures']['save_path'])
-    show_sample_by_classes(ims, labs, save_path=cfg_an['figures']['save_path'])
-
-
-
+    show_data_distribution(labs, save_path=fig_path)
+    show_sample(
+        ims, cfg_an['sample_rows'], cfg_an['sample_cols'], save_path=fig_path)
+    show_sample_by_classes(ims, labs, save_path=fig_path)
     plt.close('all')
