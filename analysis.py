@@ -35,7 +35,8 @@ def load_data(data_path, logger_name='log'):
                  and f.endswith('.jpg')]
         for f in files:
             im.append(skd.imread(f))
-            lab.append(int(d))
+            # lab.append(int(d))
+            lab.append(d)
     log.info('Analysis - Loaded {} images and {} different classes'.format(
         len(im), len(set(lab))))
     return im, lab
@@ -103,7 +104,7 @@ def show_data_distribution(labels, save_path=None, logger_name='log'):
     ax.set_title('Data Distribution')
     fig.show()
     if save_path:
-        save_figure(fig, save_path, 'sample_by_classes')
+        save_figure(fig, save_path, 'hist_distribution_classes')
 
 
 def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
@@ -146,7 +147,7 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
     unique_labels = set(labels)
     log.info('Analysis - Showing a sample of images by ALL classes:'
              ' {} unique classes were found'.format(len(unique_labels)))
-    ncols = 10
+    ncols = min(10, len(unique_labels))
     nrows = math.ceil(len(unique_labels) / ncols)
     fig, axs = plt.subplots(nrows, ncols)
     [axi.set_axis_off() for axi in axs.ravel()]
@@ -156,10 +157,14 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
         temp_im = images[labels.index(label)]
         row = i % nrows
         col = j % ncols
-        axs[row, col].imshow(temp_im)
-        axs[row, col].set_title(
-            'Class {}, {}'.format(label, labels.count(label)))
-        # axs[row, col].set_axis_off()
+        if nrows > 1:
+            axs[row, col].imshow(temp_im)
+            axs[row, col].set_title(
+                'Class {}, {}'.format(label, labels.count(label)))
+        else:
+            axs[col].imshow(temp_im)
+            axs[col].set_title(
+                'Class {}, {}'.format(label, labels.count(label)))
         j += 1
         i = i if j % ncols != 0 else i + 1
     fig.show()
@@ -168,14 +173,16 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
 
 
 if __name__ == '__main__':
-    cfg_log = load_config('./conf/conf.yaml', section='logging')
-    cfg_an = load_config('./conf/conf.yaml', section='analysis')
-    logger = init_logger(cfg_log, cfg_log['name'])
-    ims, labs = load_data(cfg_an['input']['path'])
+    cfg = load_config('./conf/conf.yaml')
+    init_logger(cfg['logging'], cfg['logging']['name'])
+    ims, labs = load_data(cfg['analysis']['data_path'])
     data_summary(np.array(ims))
-    fig_path = cfg_an['figures']['save_path']
-    show_data_distribution(labs, save_path=fig_path)
-    show_sample(
-        ims, cfg_an['sample_rows'], cfg_an['sample_cols'], save_path=fig_path)
-    show_sample_by_classes(ims, labs, save_path=fig_path)
+    show_data_distribution(labs, save_path=cfg['analysis']['figures_path'])
+    show_sample(ims,
+                cfg['analysis']['sample_rows'],
+                cfg['analysis']['sample_cols'],
+                save_path=cfg['analysis']['figures_path'])
+    show_sample_by_classes(ims,
+                           labs,
+                           save_path=cfg['analysis']['figures_path'])
     plt.close('all')

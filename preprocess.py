@@ -55,9 +55,8 @@ def prepare_data_in_folders(input_path, file_name_format, criteria,
                                           crit_path,
                                           str(k),
                                           file.split('.')[0] + ext))
-        logger.info('Data prepared in their corresponding directories '
-                    'under main path {path} successfully'
-                    ''.format(path=crit_path))
+        log.info('Data prepared in their corresponding directories under main '
+                 'path {path} successfully'.format(path=crit_path))
     else:
         raise PreprocessingException(
             'An error occurred while classifying images in their '
@@ -66,5 +65,10 @@ def prepare_data_in_folders(input_path, file_name_format, criteria,
 
 if __name__ == '__main__':
     cfg = load_config('./conf/conf.yaml')
-    logger = init_logger(cfg['logging'], cfg['logging']['name'])
-    pass
+    init_logger(cfg['logging'], cfg['logging']['name'])
+    prepare_data_in_folders(
+        cfg['preprocess']['prepare']['input']['path'],
+        cfg['preprocess']['prepare']['input']['file_name_format'],
+        cfg['preprocess']['prepare']['output']['criteria'],
+        cfg['preprocess']['prepare']['output']['path'],
+        cfg['preprocess']['prepare']['output']['classes'])
