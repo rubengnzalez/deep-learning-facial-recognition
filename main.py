@@ -9,18 +9,21 @@ import preprocess as pr
 if __name__ == '__main__':
     cfg = load_config('./conf/conf.yaml')
     init_logger(cfg['logging'], cfg['logging']['name'])
+    ##############################################################
+    #                      PREPROCESSING                         #
+    ##############################################################
     x, y = pr.load_unsorted_data(cfg['data']['raw_path'],
                                  cfg['preprocess']['criteria'],
                                  cfg['data']['file_name_format'],
                                  cfg['preprocess']['classes_list'],
                                  cfg['preprocess']['classes_ranges'])
-    train_x, test_x, train_y, test_y = pr.get_train_test_split(
-        x,
-        y,
-        test_size=cfg['preprocess']['test_size'],
-        random_state=cfg['preprocess']['random_state'],
-        shuffle=cfg['preprocess']['shuffle'],
-        stratify=y)
+    train_x, test_x, train_y, test_y = \
+        pr.get_train_test_split(x, y,
+                                test_size=cfg['preprocess']['test_size'],
+                                random_state=cfg['preprocess']['random_state'],
+                                shuffle=cfg['preprocess']['shuffle'],
+                                stratify=y)
+    # TODO: call only one function that prepares both training and test data sets into their corresponding folders
     pr.prepare_data_in_folders(train_x,
                                train_y,
                                cfg['preprocess']['training_path'],
@@ -29,3 +32,16 @@ if __name__ == '__main__':
                                test_y,
                                cfg['preprocess']['test_path'],
                                cfg['preprocess']['classes_list'])
+    ##############################################################
+    #                         ANALYSIS                           #
+    ##############################################################
+    # TODO: Analysis - Complete dataset, ignoring classes
+
+    # TODO: Analysis - Training set
+
+    # TODO: Analysis - Test set
+
+    ##############################################################
+    #                        CNN MODEL                           #
+    ##############################################################
+    # TODO:
