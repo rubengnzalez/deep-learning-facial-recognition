@@ -11,14 +11,16 @@ import skimage.io as skd
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from common.utils import init_logger, load_config, create_dir
+from common.utils import init_logger, load_config, create_dir, get_pos,\
+    get_value
 
 
-def load_data(data_path, logger_name='log'):
+def load_dataset(data_path, classes, logger_name='log'):
     """
     Function to load data from a given data path. It expects the data to be
     already sorted out in their corresponding class folders
     :param data_path: Path to data
+    :param classes: list of known classes
     :param logger_name: Name of Logger instance
     :return: tuple (images, labels)
     """
@@ -35,8 +37,7 @@ def load_data(data_path, logger_name='log'):
                  and f.endswith('.jpg')]
         for f in files:
             im.append(skd.imread(f))
-            # lab.append(int(d))
-            lab.append(d)
+            lab.append(get_pos(d, classes))
     log.info('Analysis - Loaded {} images and {} different classes'.format(
         len(im), len(set(lab))))
     return im, lab
@@ -86,10 +87,11 @@ def save_figure(fig, path, name, append_date=True, logger_name='log'):
         os.path.join(path, name)))
 
 
-def show_data_distribution(labels, save_path=None, logger_name='log'):
+def show_data_distribution(labels, classes, save_path=None, logger_name='log'):
     """
-    Function that shows a histogram regarding to data distribution by classes
+    Function that shows a Bar Chart regarding to data distribution by classes
     :param labels: Array containing 1 label per image
+    :param classes: list of known classes ordered
     :param save_path: Path to save the figure
     :param logger_name: Name of Logger instance
     """
@@ -100,11 +102,48 @@ def show_data_distribution(labels, save_path=None, logger_name='log'):
                                                     len(unique_labels)))
 
     fig, ax = plt.subplots()
-    ax.hist(labels, len(unique_labels))
+    labs, counts = np.unique(labels, return_counts=True)
+    ax.bar(labs, counts, align='center')
+    fig.gca().set_xticks(labs)
     ax.set_title('Data Distribution')
+    ax.set_ylabel('Examples')
+    ax.set_xticklabels([i.upper() for i in classes], rotation=45)
     fig.show()
     if save_path:
-        save_figure(fig, save_path, 'hist_distribution_classes')
+        save_figure(fig, save_path, 'bar_distribution_classes')
+
+
+def show_train_test_distribution(train, test, classes, save_path=None,
+                                 logger_name='log'):
+    """
+    Displays a Stacked Bar Chart with Training Set and Test Set distributions
+    :param train: Array containing 1 label per image of training set
+    :param test: Array containing 1 label per image of test set
+    :param classes: list of known classes ordered
+    :param save_path: Path to save the figure
+    :param logger_name: Name of Logger instance
+    :return:
+    """
+    log = logging.getLogger(logger_name)
+    log.info('Analysis - Showing data distribution: Train ({}) vs. Test ({})'
+             ''.format(len(train), len(test)))
+    train_lbls, train_counts = np.unique(train, return_counts=True)
+    test_lbls, test_counts = np.unique(test, return_counts=True)
+    fig, ax = plt.subplots()
+    ind = np.arange(len(classes))  # the x locations for the groups
+    width = 0.5
+    p1 = ax.bar(ind, train_counts, width)
+    p2 = ax.bar(ind, test_counts, width, bottom=train_counts)
+    ax.set_title('Data Distribution - Train vs. Test')
+    ax.set_ylabel('Examples')
+    ax.set_xticklabels([i.upper() for i in classes], rotation=45)
+    fig.gca().set_xticks(train_lbls)
+    # plt.yticks(np.arange(0, 81, 10))
+    ax.legend((p1[0], p2[0]), ('Train', 'Test'))
+
+    fig.show()
+    if save_path:
+        save_figure(fig, save_path, 'bar_train_test_distrib')
 
 
 def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
@@ -134,12 +173,14 @@ def show_sample(images, nrows, ncols, save_path=None, logger_name='log'):
         save_figure(fig, save_path, 'sample')
 
 
-def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
+def show_sample_by_classes(images, labels, classes, save_path=None,
+                           logger_name='log'):
     """
     Function that shows a sample of the data, with 1 image per class.
     It will display a randomly chosen image for each class
     :param images: Array containing images
     :param labels: Array containing labels
+    :param classes: list of known classes ordered
     :param save_path: Path to save the figure
     :param logger_name: Name of Logger instance
     """
@@ -159,12 +200,12 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
         col = j % ncols
         if nrows > 1:
             axs[row, col].imshow(temp_im)
-            axs[row, col].set_title(
-                'Class {}, {}'.format(label, labels.count(label)))
+            axs[row, col].set_title('Class {}:{}, {}'.format(
+                label, get_value(label, classes).upper(), labels.count(label)))
         else:
             axs[col].imshow(temp_im)
-            axs[col].set_title(
-                'Class {}, {}'.format(label, labels.count(label)))
+            axs[col].set_title('Class {}:{}, {}'.format(
+                label, get_value(label, classes).upper(), labels.count(label)))
         j += 1
         i = i if j % ncols != 0 else i + 1
     fig.show()
@@ -175,14 +216,24 @@ def show_sample_by_classes(images, labels, save_path=None, logger_name='log'):
 if __name__ == '__main__':
     cfg = load_config('./conf/conf.yaml')
     init_logger(cfg['logging'], cfg['logging']['name'])
-    ims, labs = load_data(cfg['analysis']['data_path'])
-    data_summary(np.array(ims))
-    show_data_distribution(labs, save_path=cfg['analysis']['figures_path'])
-    show_sample(ims,
+    train_path = os.path.join(cfg['data']['sorted_path'], 'training')
+    test_path = os.path.join(cfg['data']['sorted_path'], 'test')
+    train_ims, train_labs = \
+        load_dataset(train_path, cfg['data']['classes_list'])
+    test_ims, test_labs = load_dataset(test_path, cfg['data']['classes_list'])
+    data_summary(np.array(train_ims))
+    show_data_distribution(train_labs,
+                           cfg['data']['classes_list'],
+                           save_path=cfg['analysis']['figures_path'])
+    show_train_test_distribution(train_labs, test_labs,
+                                 cfg['data']['classes_list'],
+                                 save_path=cfg['analysis']['figures_path'])
+    show_sample(train_ims,
                 cfg['analysis']['sample_rows'],
                 cfg['analysis']['sample_cols'],
                 save_path=cfg['analysis']['figures_path'])
-    show_sample_by_classes(ims,
-                           labs,
+    show_sample_by_classes(train_ims,
+                           train_labs,
+                           cfg['data']['classes_list'],
                            save_path=cfg['analysis']['figures_path'])
     plt.close('all')

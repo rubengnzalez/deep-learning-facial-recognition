@@ -2,19 +2,8 @@ name: "deep_learning_facial_recognition"
 data:
   base_path: "data/"
   raw_path: "data/raw/"
-  splitted_path: "data/age/"
+  sorted_path: "data/age/"
   file_name_format: "age_gender_race_datetime.extension"
-analysis:
-  sample_rows: 1
-  sample_cols: 8
-  figures_path: 'figures'
-preprocess:
-  test_size: 0.2
-  random_state: 42
-  shuffle: True
-  training_path: "data/age/training/"
-  test_path: "data/age/test/"
-  criteria: "age"
   classes_list:
     - infant
     - child
@@ -22,6 +11,16 @@ preprocess:
     - adult
     - middle_age
     - old
+analysis:
+  sample_rows: 1
+  sample_cols: 8
+  figures_path: "figures/"
+preprocess:
+  test_size: 0.2
+  random_state: 42
+  shuffle: True
+  dest_path: "data/age/"
+  criteria: "age"
   classes_ranges:
     infant:
       - 1

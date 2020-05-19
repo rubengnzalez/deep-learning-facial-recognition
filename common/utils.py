@@ -99,7 +99,6 @@ def remove_dir(dir_path, logger_name='log'):
     Removes the directory passed by argument
     :param dir_path: path to the directory
     :param logger_name: logger name
-    :return:
     """
     logger = logging.getLogger(logger_name)
     try:
@@ -108,3 +107,23 @@ def remove_dir(dir_path, logger_name='log'):
         logger.error('Error while removing directory {path}: {err}'.format(
                 path=dir_path, err=e.strerror))
         sys.exit(1)
+
+
+def get_pos(value, classes):
+    """
+    Returns the position of the label in the 'classes' iterable
+    :param value: label existing in classes
+    :param classes: list/tuple of elements
+    :return: position of 'label' in 'classes'
+    """
+    return classes.index(value)
+
+
+def get_value(pos, classes):
+    """
+    Returns the value associated to the position passed as argument
+    :param pos: position of the value to be returned
+    :param classes: list/tuple of elements
+    :return: value stored in the position pos for 'classes' list
+    """
+    return classes[id if isinstance(id, int) else int(pos)]
