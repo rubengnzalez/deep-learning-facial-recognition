@@ -102,12 +102,17 @@ def show_data_distribution(labels, classes, save_path=None, logger_name='log'):
                                                     len(unique_labels)))
 
     fig, ax = plt.subplots()
+    title_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
+                  'size': 18}
+    label_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
+                  'size': 14}
     labs, counts = np.unique(labels, return_counts=True)
     ax.bar(labs, counts, align='center')
     fig.gca().set_xticks(labs)
-    ax.set_title('Data Distribution')
-    ax.set_ylabel('Examples')
-    ax.set_xticklabels([i.upper() for i in classes], rotation=45)
+    ax.set_title('Data Distribution', fontdict=title_font)
+    ax.set_ylabel('Examples', fontdict=label_font)
+    ax.set_xlabel('Classes', fontdict=label_font)
+    ax.set_xticklabels(classes, rotation=45, fontdict={'family': 'serif'})
     fig.show()
     if save_path:
         save_figure(fig, save_path, 'bar_distribution_classes')
@@ -134,9 +139,14 @@ def show_train_test_distribution(train, test, classes, save_path=None,
     width = 0.5
     p1 = ax.bar(ind, train_counts, width)
     p2 = ax.bar(ind, test_counts, width, bottom=train_counts)
-    ax.set_title('Data Distribution - Train vs. Test')
-    ax.set_ylabel('Examples')
-    ax.set_xticklabels([i.upper() for i in classes], rotation=45)
+    title_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
+                  'size': 18}
+    ax.set_title('Data Distribution - Train vs. Test', fontdict=title_font)
+    label_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
+                  'size': 14}
+    ax.set_ylabel('Examples', fontdict=label_font)
+    ax.set_xlabel('Classes', fontdict=label_font)
+    ax.set_xticklabels(classes, rotation=45, fontdict={'family': 'serif'})
     fig.gca().set_xticks(train_lbls)
     # plt.yticks(np.arange(0, 81, 10))
     ax.legend((p1[0], p2[0]), ('Train', 'Test'))
