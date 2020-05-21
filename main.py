@@ -64,6 +64,7 @@ if __name__ == '__main__':
                                                         class_mode='categorical',
                                                         shuffle=True,
                                                         seed=42)
+
     test_set = test_datagen.flow_from_directory(test_path,
                                                 target_size=(64, 64),
                                                 batch_size=32,
@@ -91,7 +92,7 @@ if __name__ == '__main__':
                            metrics=['accuracy'])
     hist = age_classifier.fit(training_set,
                               steps_per_epoch=(18966 // 32),
-                              epochs=50,
+                              epochs=25,
                               validation_data=test_set,
                               validation_steps=(4742 // 32))
 

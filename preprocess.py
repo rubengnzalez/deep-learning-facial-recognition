@@ -6,7 +6,7 @@ __email__ = '100284010@alumnos.uc3m.es'
 import logging
 import os
 from sklearn.model_selection import train_test_split
-from common.exceptions import PreprocessingException
+from common.exceptions import PreprocessingError
 from common.utils import remove_dir, create_dir, copy_file, get_pos, get_value
 
 
@@ -114,10 +114,10 @@ def save_train_test_sets(inputs=None, targets=None, names=None,
                 prepare_data_in_folders(inputs[i], targets[i], path, classes)
                 i += 1
         else:
-            raise PreprocessingException(
+            raise PreprocessingError(
                 'Inputs size must be equal to targets size')
     else:
-        raise PreprocessingException(
+        raise PreprocessingError(
             'Please check arguments - inputs: {}, targets: {}, dest_path: {}, '
             'classes: {}'.format(inputs, targets, dest_path, classes))
 

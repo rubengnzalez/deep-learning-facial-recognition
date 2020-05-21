@@ -27,9 +27,9 @@ def load_config(path, section=None):
             return cfg
         elif section in cfg.keys():
             return cfg[section]
-        raise ex.ConfigurationException(
+        raise ex.ConfigurationError(
             'Section: {s} not found in configuration file'.format(s=section))
-    raise ex.ConfigurationException(
+    raise ex.ConfigurationError(
         'Configuration file type is unknown: {p}'.format(p=path))
 
 

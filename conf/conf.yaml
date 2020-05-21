@@ -13,7 +13,7 @@ data:
     - old
 analysis:
   sample_rows: 1
-  sample_cols: 8
+  sample_cols: 4
   figures_path: "figures/"
 preprocess:
   test_size: 0.2
