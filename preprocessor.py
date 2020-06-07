@@ -34,8 +34,8 @@ class Preprocessor:
     def load_unsorted_data(self, data_path):
         """
         TODO:  ############################################################################
-        :param data_path:
-        :return:
+        :param data_path: path where the data is
+        :return: tuple containing two arrays: images paths and labels
         """
         lab_idx = self.file_name_format.split('_').index(self.criteria)
         lab, path = [], []
@@ -52,9 +52,10 @@ class Preprocessor:
 
     def assign_class(self, real_value):
         """
-        TODO:  ############################################################################
-        :param real_value:
-        :return:
+        It assigns a real value (e.g. age, race, gender) to its corresponding
+         class name
+        :param real_value: real value to be assigned
+        :return: class name
         """
         val = real_value if isinstance(id, int) else int(real_value)
         for k in self.classes_ranges.keys():
@@ -66,12 +67,12 @@ class Preprocessor:
     def get_train_test_split(self, test_size, random_state=None, shuffle=True,
                              stratify=True):
         """
-        TODO:  ############################################################################
-        :param test_size:
-        :param random_state:
-        :param shuffle:
-        :param stratify:
-        :return:
+        It splits data into train-test sets. It's a wrapper for function
+        train_test_split from sklearn.model_selection module.
+        :param test_size: size of test set. It must be a float between 0 and 1
+        :param random_state: random state / bean
+        :param shuffle: boolean that determines if data should be shuffled
+        :param stratify: If True, data is split in a stratified fashion
         """
         return train_test_split(self.images,
                                 self.labels,
@@ -82,10 +83,10 @@ class Preprocessor:
 
     def prepare_data_in_folders(self, x, y, path):
         """
-        TODO: ################################################################################
-        :param x:
-        :param y:
-        :param path:
+        It copies images into their corresponding class folders.
+        :param x: list of images paths
+        :param y: list of classes/labels
+        :param path: base path where class folders will be created
         """
         full_path = os.path.abspath(path)
         if os.path.exists(full_path):
@@ -106,11 +107,10 @@ class Preprocessor:
 
     def save_train_test_sets(self, inputs=None, targets=None, names=None):
         """
-        TODO: ##########################################################################
-        :param inputs:
-        :param targets:
-        :param names:
-        :return:
+        It saves datasets on disk, both train and test sets
+        :param inputs: tuple of lists containing data sets (train and test)
+        :param targets: tuple of lists containing labels/classes for both sets
+        :param names: names of the sets
         """
         if type(inputs) in [tuple, list] and type(targets) in [tuple, list]:
             if len(inputs) == len(targets) == len(names):
@@ -129,11 +129,11 @@ class Preprocessor:
 
     def run(self, test_size, random_state, shuffle=True, stratify=True):
         """
-        # TODO: ####################################################################
-        :param test_size:
-        :param random_state:
-        :param shuffle:
-        :param stratify:
+        It runs preprocessing: data split and save on disk
+        :param test_size: size of test set. It must be a float between 0 and 1
+        :param random_state: random state / bean
+        :param shuffle: boolean that determines if data should be shuffled
+        :param stratify: If True, data is split in a stratified fashion
         :return:
         """
         train_x, test_x, train_y, test_y = \
