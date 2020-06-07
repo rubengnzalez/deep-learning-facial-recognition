@@ -321,6 +321,25 @@ class Analyzer:
         else:
             plt.close(fig)
 
+    def run(self):
+        """It runs a complete analysis by using self methods."""
+        # Summaries
+        self.show_train_data_summary()
+        self.show_test_data_summary()
+        # Individual data distributions by classes
+        self.show_train_data_distribution()
+        self.show_test_data_distribution()
+        # Training vs Test Data distributions by classes
+        self.show_train_test_distribution()
+        # Some samples for both subsets to verify tehy were loaded properly
+        self.show_train_sample(1, 4)
+        self.show_test_sample(1, 4)
+        # Show sample with 1 image/class for each subset (training and test)
+        self.show_train_sample_by_classes()
+        self.show_test_sample_by_classes()
+        # Close plots
+        self.close_plot('all')
+
 
 if __name__ == '__main__':
     cfg = load_config('./conf/conf.yaml')
@@ -331,19 +350,4 @@ if __name__ == '__main__':
                     te_path,
                     cfg['data']['classes_list'],
                     cfg['analysis']['figures_path'])
-    # Summaries
-    anlz.show_train_data_summary()
-    anlz.show_test_data_summary()
-    # Individual data distributions by classes
-    anlz.show_train_data_distribution()
-    anlz.show_test_data_distribution()
-    # Training vs Test Data distributions by classes
-    anlz.show_train_test_distribution()
-    # Some samples for both subsets to verify tehy were loaded properly
-    anlz.show_train_sample(1, 4)
-    anlz.show_test_sample(1, 4)
-    # Show sample with 1 image/class for each subset (training and test)
-    anlz.show_train_sample_by_classes()
-    anlz.show_test_sample_by_classes()
-    # Close plots
-    anlz.close_plot('all')
+    anlz.run()

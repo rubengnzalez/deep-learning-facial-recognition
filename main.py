@@ -3,39 +3,41 @@
 __author__ = 'Ruben Gonzalez Lozano'
 __email__ = '100284010@alumnos.uc3m.es'
 
-# from common.utils import load_config, init_logger
-# import preprocess as pr
+import os
+
+from analyzer import Analyzer
+from common.utils import load_config, init_logger
+from preprocessor import Preprocessor
 
 if __name__ == '__main__':
-    # cfg = load_config('./conf/conf.yaml')
-    # init_logger(cfg['logging'], cfg['logging']['name'])
+    cfg = load_config('./conf/conf.yaml')
+    init_logger(cfg['logging'], cfg['logging']['name'])
     # ##############################################################
     # #                      PREPROCESSING                         #
     # ##############################################################
-    # x, y = pr.load_unsorted_data(cfg['data']['raw_path'],
-    #                              cfg['preprocess']['criteria'],
-    #                              cfg['data']['file_name_format'],
-    #                              cfg['data']['classes_list'],
-    #                              cfg['preprocess']['classes_ranges'])
-    # train_x, test_x, train_y, test_y = \
-    #     pr.get_train_test_split(x, y,
-    #                             test_size=cfg['preprocess']['test_size'],
-    #                             random_state=cfg['preprocess']['random_state'],
-    #                             shuffle=cfg['preprocess']['shuffle'],
-    #                             stratify=y)
-    # pr.save_train_test_sets(inputs=(train_x, test_x),
-    #                         targets=(train_y, test_y),
-    #                         names=('training', 'test'),
-    #                         dest_path=cfg['preprocess']['dest_path'],
-    #                         classes=cfg['data']['classes_list'])
+    # prep = Preprocessor(cfg['data']['raw_path'],
+    #                     cfg['preprocess']['criteria'],
+    #                     cfg['data']['file_name_format'],
+    #                     cfg['data']['classes_list'],
+    #                     cfg['preprocess']['classes_ranges'],
+    #                     cfg['preprocess']['dest_path'])
+    # prep.run(test_size=cfg['preprocess']['test_size'],
+    #          random_state=cfg['preprocess']['random_state'],
+    #          shuffle=cfg['preprocess']['shuffle'],
+    #          stratify=True)
+
     ##############################################################
     #                         ANALYSIS                           #
     ##############################################################
     # TODO: Analysis - Complete dataset, ignoring classes
 
-    # TODO: Analysis - Training set
-
-    # TODO: Analysis - Test set
+    # tr_path = os.path.join(cfg['data']['sorted_path'], 'training')
+    # te_path = os.path.join(cfg['data']['sorted_path'], 'test')
+    # anlz = Analyzer(tr_path,
+    #                 te_path,
+    #                 cfg['data']['classes_list'],
+    #                 cfg['analysis']['figures_path'])
+    # anlz.run()
 
     ##############################################################
     #                        CNN MODEL                           #

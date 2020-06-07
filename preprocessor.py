@@ -33,7 +33,7 @@ class Preprocessor:
 
     def load_unsorted_data(self, data_path):
         """
-        TODO:  ############################################################################
+        It loads data from a given folder path.
         :param data_path: path where the data is
         :return: tuple containing two arrays: images paths and labels
         """
