@@ -22,8 +22,8 @@ from common.utils import create_dir
 
 class AgeClassifier:
 
-    def __init__(self, training_path, test_path, fig_path='figures/',
-                 **kwargs):
+    def __init__(self, training_path, test_path, target_list,
+                 fig_path='figures/', **kwargs):
         self.logger = logging.getLogger(kwargs.get('logger_name')
                                         if kwargs.get('logger_name', False)
                                         else 'log')
@@ -33,6 +33,7 @@ class AgeClassifier:
             tf.config.experimental.set_memory_growth(physical_devices[0], True)
         self.training_set, self.test_set = \
             self.generate_datasets(training_path, test_path)
+        self.target_list = target_list
         self.model, self.history = None, None
         self.fig_path = fig_path
         self.name = 'BLABLABLA'
@@ -107,11 +108,11 @@ class AgeClassifier:
         It trains the model i.e. it calls the fit() method from model to train
         the network according to the training set generated.
         """
-        training_steps = (18966 // 32)
-        test_steps = (4742 // 32)
+        training_steps = 18966 // 32 + 1
+        test_steps = 4742 // 32 + 1
         self.history = self.model.fit(self.training_set,
                                       steps_per_epoch=training_steps,
-                                      epochs=25,
+                                      epochs=1,
                                       validation_data=self.test_set,
                                       validation_steps=test_steps)
 
@@ -126,25 +127,23 @@ class AgeClassifier:
         """
         if not save_path:
             save_path = self.fig_path
-        y = self.model.predict_generator(self.test_set, steps=steps)
+        y = self.model.predict(self.test_set, steps=steps)
         y_pred = np.argmax(y, axis=1)
-        self.logger.info('Confusion Matrix')
         conf_mat = confusion_matrix(self.test_set.classes, y_pred)
-        self.logger.info(conf_mat)
-        self.logger.info('Classification Report')
+        self.logger.info('Confusion Matrix\n%s' % conf_mat)
         clas_rep = classification_report(self.test_set.classes,
                                          y_pred,
                                          target_names=target_names)
-        self.logger.info(clas_rep)
+        self.logger.info('Classification Report\n%s' % clas_rep)
         con_mat_norm = np.around(
             conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis],
             decimals=2)
         con_mat_df = pd.DataFrame(con_mat_norm,
-                                  index=self.test_set.classes,
-                                  columns=self.test_set.classes)
+                                  index=self.target_list,
+                                  columns=self.target_list)
         fig, axs = plt.subplots()
         fig.set_size_inches(8, 8)
-        sn.heatmap(con_mat_df, annot=True, cmap=plt.cm.Blues)
+        sn.heatmap(con_mat_df, annot=True, cmap=plt.get_cmap('Blues'))
         fig.tight_layout()
         axs.set_ylabel('True')
         axs.set_xlabel('Predicted')
@@ -154,7 +153,7 @@ class AgeClassifier:
                 else '{}_confusion_matrix'.format(set_name)
             self.save_figure(fig, fname, save_path)
 
-    def plot_model(self, file_path, show_shapes=True, show_layer_names=True):
+    def plot_model(self, show_shapes=True, show_layer_names=True):
         """
         It creates a file with a plot of the model/network architecture. It
         shows the shapes and the layers if wanted.
@@ -163,8 +162,10 @@ class AgeClassifier:
         :param show_layer_names: boolean that determines if layer names should
         be shown
         """
+        path = os.path.join(self.fig_path,
+                            '{}_model_architecture.png'.format(self.name))
         plot_model(self.model,
-                   to_file=file_path,
+                   to_file=path,
                    show_shapes=show_shapes,
                    show_layer_names=show_layer_names)
 

@@ -48,12 +48,15 @@ if __name__ == '__main__':
     fig_full_path = os.path.abspath(cfg['analysis']['figures_path'])
     model_full_path = os.path.abspath('classifiers/models')
 
-    cnn = AgeClassifier(train_path, test_path, fig_path=fig_full_path)
+    cnn = AgeClassifier(train_path,
+                        test_path,
+                        cfg['data']['classes_list'],
+                        fig_path=fig_full_path)
     cnn.compile()
-    cnn.plot_model(os.path.join(fig_full_path, 'model_architecture.png'))
+    cnn.plot_model()
     cnn.train()
     cnn.show_training_history()
-    cnn.plot_confusion_matrix((4742 // 32), cfg['data']['classes_list'])
+    cnn.plot_confusion_matrix((4742 // 32 + 1), cfg['data']['classes_list'])
     cnn.save_model(model_full_path)
 
 
