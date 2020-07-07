@@ -5,12 +5,12 @@ data:
   sorted_path: "data/age/"
   file_name_format: "age_gender_race_datetime.extension"
   classes_list:
-    - infant
-    - child
-    - young
-    - adult
-    - middle_age
-    - old
+    - 0_infant
+    - 1_child
+    - 2_young
+    - 3_adult
+    - 4_middle_age
+    - 5_old
 analysis:
   sample_rows: 1
   sample_cols: 4
@@ -22,22 +22,22 @@ preprocess:
   dest_path: "data/age/"
   criteria: "age"
   classes_ranges:
-    infant:
+    0_infant:
       - 1
       - 3
-    child:
+    1_child:
       - 4
       - 12
-    young:
+    2_young:
       - 13
       - 25
-    adult:
+    3_adult:
       - 26
       - 40
-    middle_age:
+    4_middle_age:
       - 41
       - 60
-    old:
+    5_old:
       - 61
       - 120
 logging:

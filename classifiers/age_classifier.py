@@ -84,9 +84,9 @@ class AgeClassifier:
             Conv2D(filters=32, kernel_size=(3, 3), input_shape=(64, 64, 3),
                    activation='relu'))
         self.model.add(MaxPool2D(pool_size=(2, 2)))
-        # self.model.add(
-        #     Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-        # self.model.add(MaxPool2D(pool_size=(2, 2)))
+        self.model.add(
+            Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+        self.model.add(MaxPool2D(pool_size=(2, 2)))
         # self.model.add(
         #     Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
         # self.model.add(MaxPool2D(pool_size=(2, 2)))
@@ -112,16 +112,14 @@ class AgeClassifier:
         test_steps = 4742 // 32 + 1
         self.history = self.model.fit(self.training_set,
                                       steps_per_epoch=training_steps,
-                                      epochs=1,
+                                      epochs=25,
                                       validation_data=self.test_set,
                                       validation_steps=test_steps)
 
-    def plot_confusion_matrix(self, steps, target_names,
-                              set_name='', save_path=None):
+    def plot_confusion_matrix(self, steps, set_name='', save_path=None):
         """
         It plots confusion matrix and classification report.
         :param steps: steps for prediction
-        :param target_names: list of classes
         :param set_name: Name of the set to be displayed
         :param save_path: Path to save the figure
         """
@@ -133,7 +131,7 @@ class AgeClassifier:
         self.logger.info('Confusion Matrix\n%s' % conf_mat)
         clas_rep = classification_report(self.test_set.classes,
                                          y_pred,
-                                         target_names=target_names)
+                                         target_names=self.target_list)
         self.logger.info('Classification Report\n%s' % clas_rep)
         con_mat_norm = np.around(
             conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis],
@@ -206,6 +204,7 @@ class AgeClassifier:
                       'size': 18}
         label_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
                       'size': 14}
+
         # Accuracy - Train vs. Test
         axs[0].plot(self.history.history['accuracy'], lw=2)
         axs[0].plot(self.history.history['val_accuracy'], lw=2)
@@ -213,6 +212,7 @@ class AgeClassifier:
         axs[0].set_ylabel('Accuracy', fontdict=label_font)
         axs[0].set_xlabel('Epoch', fontdict=label_font)
         axs[0].legend(['train', 'test'], loc='upper left')
+
         # Loss - Train vs. Test
         axs[1].plot(self.history.history['loss'], lw=2)
         axs[1].plot(self.history.history['val_loss'], lw=2)
@@ -243,8 +243,8 @@ class AgeClassifier:
         """
         It loads the model and the weights from file. It corresponds to a
         previuosly trained deep learning model
-        :param model_path:
-        :param weights_path:
+        :param model_path: path to the file with the trained model
+        :param weights_path: path to the file with the trained weights
         """
         self.model = load_model(model_path)
         self.model.load_weights(weights_path)
