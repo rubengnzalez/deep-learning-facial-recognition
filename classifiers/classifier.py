@@ -32,11 +32,11 @@ class Classifier:
                 tf.config.experimental.list_physical_devices('GPU')
             tf.config.experimental.set_memory_growth(physical_devices[0], True)
         self.name = cfg['name']
+        self.cfg = cfg
         self.training_set, self.test_set = \
             self.generate_datasets(training_path, test_path)
         self.training_size, self.test_size = training_size, test_size
         self.target_list = target_list
-        self.cfg = cfg
         self.model, self.history = None, None
         self.fig_path = fig_path
 
@@ -204,8 +204,9 @@ class Classifier:
         :param show_layer_names: boolean that determines if layer names should
         be shown
         """
-        path = os.path.join(self.fig_path,
-                            '{}_model_architecture.png'.format(self.name))
+        path = \
+            os.path.join(self.fig_path, '{}_model_architecture_{}.png'.format(
+                self.name, datetime.now().strftime('%Y%m%d%H%M%S')))
         plot_model(self.model,
                    to_file=path,
                    show_shapes=show_shapes,
