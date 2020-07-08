@@ -20,11 +20,10 @@ from tensorflow.python.keras.utils.vis_utils import plot_model
 from common.utils import create_dir
 
 
-class AgeClassifier:
+class Classifier:
 
-    def __init__(self, name, training_path, test_path, training_size,
-                 test_size, target_list, cfg, fig_path='figures/',
-                 **kwargs):
+    def __init__(self, training_path, test_path, training_size, test_size,
+                 target_list, cfg, fig_path='figures/', **kwargs):
         self.logger = logging.getLogger(kwargs.get('logger_name')
                                         if kwargs.get('logger_name', False)
                                         else 'log')
@@ -32,7 +31,7 @@ class AgeClassifier:
             physical_devices = \
                 tf.config.experimental.list_physical_devices('GPU')
             tf.config.experimental.set_memory_growth(physical_devices[0], True)
-        self.name = name
+        self.name = cfg['name']
         self.training_set, self.test_set = \
             self.generate_datasets(training_path, test_path)
         self.training_size, self.test_size = training_size, test_size
@@ -58,14 +57,14 @@ class AgeClassifier:
         test_datagen = ImageDataGenerator(rescale=1. / 255)
         training_set = training_datagen.flow_from_directory(
             training_path,
-            target_size=conf['training_set']['target_size'],
+            target_size=tuple(conf['training_set']['target_size']),
             batch_size=conf['training_set']['batch_size'],
             class_mode=conf['training_set']['class_mode'],
             shuffle=conf['training_set']['shuffle'],
             seed=conf['training_set']['seed'])
         test_set = test_datagen.flow_from_directory(
             test_path,
-            target_size=conf['test_set']['target_size'],
+            target_size=tuple(conf['test_set']['target_size']),
             batch_size=conf['test_set']['batch_size'],
             class_mode=conf['test_set']['class_mode'],
             shuffle=conf['test_set']['shuffle'],
@@ -84,17 +83,17 @@ class AgeClassifier:
         # add first Conv2D layer
         self.model.add(
             Conv2D(filters=arc_cfg['input_layer']['filters'],
-                   kernel_size=arc_cfg['input_layer']['kernel_size'],
-                   input_shape=arc_cfg['input_layer']['input_shape'],
+                   kernel_size=tuple(arc_cfg['input_layer']['kernel_size']),
+                   input_shape=tuple(arc_cfg['input_layer']['input_shape']),
                    activation=arc_cfg['input_layer']['activation']))
         # check if MaxPool2D layer should be appended
         if arc_cfg['input_layer'].get('max_pooling'):
-            self.model.add(MaxPool2D(
-                pool_size=arc_cfg['input_layer']['max_pooling']['pool_size']))
+            self.model.add(MaxPool2D(pool_size=tuple(
+                arc_cfg['input_layer']['max_pooling']['pool_size'])))
         # check if hidden Conv2D are configured and add them if needed
-        if arc_cfg.get('hidden_conv') and \
-                isinstance(arc_cfg.get('hidden_conv'), list):
-            self.add_conv2d_layers(arc_cfg['hidden_conv'])
+        if arc_cfg.get('hidden_conv2d') and \
+                isinstance(arc_cfg.get('hidden_conv2d'), list):
+            self.add_conv2d_layers(arc_cfg['hidden_conv2d'])
         # add Flatten layer
         self.model.add(Flatten())
         # check if hidden Dense layers are configured and add them if needed
@@ -133,12 +132,12 @@ class AgeClassifier:
         """
         for layer in layers_list:
             self.model.add(Conv2D(filters=layer['filters'],
-                                  kernel_size=layer['kernel_size'],
+                                  kernel_size=tuple(layer['kernel_size']),
                                   activation=layer['activation']))
             # check if MaxPool2D layer should be appended
             if layer.get('max_pooling'):
-                self.model.add(
-                    MaxPool2D(pool_size=layer['max_pooling']['pool_size']))
+                self.model.add(MaxPool2D(
+                    pool_size=tuple(layer['max_pooling']['pool_size'])))
 
     def add_dense_layers(self, layers_list):
         """
