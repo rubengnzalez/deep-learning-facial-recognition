@@ -22,8 +22,9 @@ from common.utils import create_dir
 
 class AgeClassifier:
 
-    def __init__(self, training_path, test_path, target_list,
-                 fig_path='figures/', **kwargs):
+    def __init__(self, name, training_path, test_path, training_size,
+                 test_size, target_list, cfg, fig_path='figures/',
+                 **kwargs):
         self.logger = logging.getLogger(kwargs.get('logger_name')
                                         if kwargs.get('logger_name', False)
                                         else 'log')
@@ -31,78 +32,80 @@ class AgeClassifier:
             physical_devices = \
                 tf.config.experimental.list_physical_devices('GPU')
             tf.config.experimental.set_memory_growth(physical_devices[0], True)
+        self.name = name
         self.training_set, self.test_set = \
             self.generate_datasets(training_path, test_path)
+        self.training_size, self.test_size = training_size, test_size
         self.target_list = target_list
+        self.cfg = cfg
         self.model, self.history = None, None
         self.fig_path = fig_path
-        self.name = 'BLABLABLA'
 
-    @staticmethod
-    def generate_datasets(training_path, test_path):
+    def generate_datasets(self, training_path, test_path):
         """
         It creates Data Generators for data augmentation.
         :param training_path: Path to training set
         :param test_path: Path to test set
         :return: Tuple of generators: (training, test)
         """
-        training_datagen = ImageDataGenerator(rescale=1. / 255,
-                                              rotation_range=0.3,
-                                              shear_range=0.1,
-                                              zoom_range=[0.90, 1.2],
-                                              horizontal_flip=True)
+        conf = self.cfg['data_augmentation']
+        training_datagen = ImageDataGenerator(
+            rescale=1. / 255,
+            rotation_range=conf['training_set']['rotation_range'],
+            shear_range=conf['training_set']['shear_range'],
+            zoom_range=conf['training_set']['zoom_range'],
+            horizontal_flip=conf['training_set']['horizontal_flip'])
         test_datagen = ImageDataGenerator(rescale=1. / 255)
-        training_set = \
-            training_datagen.flow_from_directory(training_path,
-                                                 target_size=(64, 64),
-                                                 batch_size=32,
-                                                 class_mode='categorical',
-                                                 shuffle=True,
-                                                 seed=42)
-        test_set = test_datagen.flow_from_directory(test_path,
-                                                    target_size=(64, 64),
-                                                    batch_size=32,
-                                                    class_mode='categorical',
-                                                    shuffle=False,
-                                                    seed=42)
+        training_set = training_datagen.flow_from_directory(
+            training_path,
+            target_size=conf['training_set']['target_size'],
+            batch_size=conf['training_set']['batch_size'],
+            class_mode=conf['training_set']['class_mode'],
+            shuffle=conf['training_set']['shuffle'],
+            seed=conf['training_set']['seed'])
+        test_set = test_datagen.flow_from_directory(
+            test_path,
+            target_size=conf['test_set']['target_size'],
+            batch_size=conf['test_set']['batch_size'],
+            class_mode=conf['test_set']['class_mode'],
+            shuffle=conf['test_set']['shuffle'],
+            seed=conf['test_set']['seed'])
         return training_set, test_set
-
-    def show_summary(self):
-        """
-        It shows a summary of the model architecture
-        """
-        self.logger.info('{} - Model summary'.format(self.name.upper()))
-        self.logger.info(self.model.summary())
 
     def compile(self, summary=True):
         """
         It builds and compiles the deep learning network
         :param summary: Determines whether the model summary is shown or not
         """
+        arc_cfg, cmp_cfg = self.cfg['architecture'], self.cfg['compilation']
         # Build architecture
         self.logger.info('{} - Building model'.format(self.name.upper()))
         self.model = Sequential()
+        # add first Conv2D layer
         self.model.add(
-            Conv2D(filters=32, kernel_size=(3, 3), input_shape=(64, 64, 3),
-                   activation='relu'))
-        self.model.add(MaxPool2D(pool_size=(2, 2)))
-        # self.model.add(
-        #     Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-        # self.model.add(MaxPool2D(pool_size=(2, 2)))
-        # self.model.add(
-        #     Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
-        # self.model.add(MaxPool2D(pool_size=(2, 2)))
+            Conv2D(filters=arc_cfg['input_layer']['filters'],
+                   kernel_size=arc_cfg['input_layer']['kernel_size'],
+                   input_shape=arc_cfg['input_layer']['input_shape'],
+                   activation=arc_cfg['input_layer']['activation']))
+        # check if MaxPool2D layer should be appended
+        if arc_cfg['input_layer'].get('max_pooling'):
+            self.model.add(MaxPool2D(
+                pool_size=arc_cfg['input_layer']['max_pooling']['pool_size']))
+        # check if hidden Conv2D are configured and add them if needed
+        if arc_cfg.get('hidden_conv') and \
+                isinstance(arc_cfg.get('hidden_conv'), list):
+            self.add_conv2d_layers(arc_cfg['hidden_conv'])
+        # add Flatten layer
         self.model.add(Flatten())
-        self.model.add(Dense(units=128, activation='relu'))
-        self.model.add(Dropout(0.3))
-        self.model.add(Dense(units=64, activation='relu'))
-        self.model.add(Dropout(0.3))
-        self.model.add(Dense(units=6, activation='softmax'))
+        # check if hidden Dense layers are configured and add them if needed
+        if arc_cfg.get('hidden_dense') and \
+                isinstance(arc_cfg.get('hidden_dense'), list):
+            self.add_dense_layers(arc_cfg['hidden_dense'])
         # Compile model
         self.logger.info('{} - Compiling model'.format(self.name.upper()))
-        self.model.compile(optimizer='adam',
-                           loss='categorical_crossentropy',
-                           metrics=['accuracy'])
+        self.model.compile(optimizer=cmp_cfg['optimizer'],
+                           loss=cmp_cfg['loss'],
+                           metrics=cmp_cfg['metrics'])
         if summary:
             self.show_summary()
 
@@ -111,14 +114,51 @@ class AgeClassifier:
         It trains the model i.e. it calls the fit() method from model to train
         the network according to the training set generated.
         """
+        aug_cfg = self.cfg['data_augmentation']
         self.logger.info('{} - Training model'.format(self.name.upper()))
-        training_steps = 18966 // 32 + 1
-        test_steps = 4742 // 32 + 1
+        training_steps = \
+            self.training_size // aug_cfg['training_set']['batch_size'] + 1
+        test_steps = self.test_size // aug_cfg['test_set']['batch_size'] + 1
         self.history = self.model.fit(self.training_set,
                                       steps_per_epoch=training_steps,
-                                      epochs=2,
+                                      epochs=self.cfg['training']['epochs'],
                                       validation_data=self.test_set,
                                       validation_steps=test_steps)
+
+    def add_conv2d_layers(self, layers_list):
+        """
+        It adds Conv2D layers according to the layers list passed as argument.
+        Additionally, it adds MaxPool2D layer if needed.
+        :param layers_list: list containing configuration of layers
+        """
+        for layer in layers_list:
+            self.model.add(Conv2D(filters=layer['filters'],
+                                  kernel_size=layer['kernel_size'],
+                                  activation=layer['activation']))
+            # check if MaxPool2D layer should be appended
+            if layer.get('max_pooling'):
+                self.model.add(
+                    MaxPool2D(pool_size=layer['max_pooling']['pool_size']))
+
+    def add_dense_layers(self, layers_list):
+        """
+        It adds Dense layers according to the layers list passed as argument.
+        Additionally, it adds Dropout if needed.
+        :param layers_list: list containing configuration of layers
+        """
+        for layer in layers_list:
+            self.model.add(Dense(units=layer['units'],
+                                 activation=layer['activation']))
+            # check if Dropout should be applied
+            if layer.get('dropout'):
+                self.model.add(Dropout(layer['dropout']))
+
+    def show_summary(self):
+        """
+        It shows a summary of the model architecture
+        """
+        self.logger.info('{} - Model summary'.format(self.name.upper()))
+        self.logger.info(self.model.summary())
 
     def plot_confusion_matrix(self, steps, set_name='', save_path=None):
         """

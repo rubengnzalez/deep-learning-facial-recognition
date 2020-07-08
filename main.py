@@ -46,10 +46,78 @@ if __name__ == '__main__':
     test_path = os.path.join(cfg['data']['sorted_path'], 'test')
     fig_full_path = os.path.abspath(cfg['analysis']['figures_path'])
     model_full_path = os.path.abspath('classifiers/models')
+    model_name = 'test-model'
+    training_size = 18966
+    test_size = 4742
+    model_cfg = {
+        'data_augmentation': {
+            'training_set': {
+                'rotation_range': 0.3,
+                'shear_range': 0.1,
+                'zoom_range': [0.90, 1.2],
+                'horizontal_flip': True,
+                'target_size': (64, 64),
+                'batch_size': 32,
+                'class_mode': 'categorical',
+                'shuffle': True,
+                'seed': 42
+            },
+            'test_set': {
+                'target_size': (64, 64),
+                'batch_size': 32,
+                'class_mode': 'categorical',
+                'shuffle': False,
+                'seed': 42
+            }
+        },
+        'architecture': {
+            'input_layer': {
+                'filters': 32,
+                'kernel_size': (3, 3),
+                'input_shape': (64, 64, 3),
+                'activation': 'relu',
+                'max_pooling': {'pool_size': (2, 2)}
+            },
+            'hidden_conv': [
+                {'filters': 32,
+                 'kernel_size': (3, 3),
+                 'activation': 'relu',
+                 'max_pooling': {'pool_size': (2, 2)}
+                 },
+                {'filters': 32,
+                 'kernel_size': (3, 3),
+                 'activation': 'relu',
+                 'max_pooling': {'pool_size': (2, 2)}
+                 },
+                {'filters': 32,
+                 'kernel_size': (3, 3),
+                 'activation': 'relu',
+                 'max_pooling': {'pool_size': (2, 2)}
+                 }
+            ],
+            'hidden_dense': [
+                {'units': 128, 'activation': 'relu', 'dropout': 0.3},
+                {'units': 64, 'activation': 'relu', 'dropout': 0.3},
+                {'units': 6, 'activation': 'softmax'},
+            ]
+        },
+        'compilation': {
+            'optimizer': 'adam',
+            'loss': 'categorical_crossentropy',
+            'metrics': ['accuracy']
+        },
+        'training': {
+            'epochs': 2
+        }
+    }
 
-    cnn = AgeClassifier(train_path,
+    cnn = AgeClassifier(model_name,
+                        train_path,
                         test_path,
+                        training_size,
+                        test_size,
                         cfg['data']['classes_list'],
+                        batch_size=32,
                         fig_path=fig_full_path)
     cnn.compile()
     cnn.plot_model()
