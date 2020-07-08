@@ -4,7 +4,6 @@ __author__ = 'Ruben Gonzalez Lozano'
 __email__ = '100284010@alumnos.uc3m.es'
 
 import os
-
 from analyzer import Analyzer
 from common.utils import load_config, init_logger
 from preprocessor import Preprocessor

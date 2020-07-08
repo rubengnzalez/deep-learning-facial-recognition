@@ -71,6 +71,7 @@ class AgeClassifier:
         """
         It shows a summary of the model architecture
         """
+        self.logger.info('{} - Model summary'.format(self.name.upper()))
         self.logger.info(self.model.summary())
 
     def compile(self, summary=True):
@@ -79,14 +80,15 @@ class AgeClassifier:
         :param summary: Determines whether the model summary is shown or not
         """
         # Build architecture
+        self.logger.info('{} - Building model'.format(self.name.upper()))
         self.model = Sequential()
         self.model.add(
             Conv2D(filters=32, kernel_size=(3, 3), input_shape=(64, 64, 3),
                    activation='relu'))
         self.model.add(MaxPool2D(pool_size=(2, 2)))
-        self.model.add(
-            Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
-        self.model.add(MaxPool2D(pool_size=(2, 2)))
+        # self.model.add(
+        #     Conv2D(filters=32, kernel_size=(3, 3), activation='relu'))
+        # self.model.add(MaxPool2D(pool_size=(2, 2)))
         # self.model.add(
         #     Conv2D(filters=64, kernel_size=(3, 3), activation='relu'))
         # self.model.add(MaxPool2D(pool_size=(2, 2)))
@@ -97,6 +99,7 @@ class AgeClassifier:
         self.model.add(Dropout(0.3))
         self.model.add(Dense(units=6, activation='softmax'))
         # Compile model
+        self.logger.info('{} - Compiling model'.format(self.name.upper()))
         self.model.compile(optimizer='adam',
                            loss='categorical_crossentropy',
                            metrics=['accuracy'])
@@ -108,11 +111,12 @@ class AgeClassifier:
         It trains the model i.e. it calls the fit() method from model to train
         the network according to the training set generated.
         """
+        self.logger.info('{} - Training model'.format(self.name.upper()))
         training_steps = 18966 // 32 + 1
         test_steps = 4742 // 32 + 1
         self.history = self.model.fit(self.training_set,
                                       steps_per_epoch=training_steps,
-                                      epochs=25,
+                                      epochs=2,
                                       validation_data=self.test_set,
                                       validation_steps=test_steps)
 
@@ -128,11 +132,13 @@ class AgeClassifier:
         y = self.model.predict(self.test_set, steps=steps)
         y_pred = np.argmax(y, axis=1)
         conf_mat = confusion_matrix(self.test_set.classes, y_pred)
-        self.logger.info('Confusion Matrix\n%s' % conf_mat)
+        self.logger.info('{} - Confusion Matrix\n{}'.format(self.name,
+                                                            conf_mat))
         clas_rep = classification_report(self.test_set.classes,
                                          y_pred,
                                          target_names=self.target_list)
-        self.logger.info('Classification Report\n%s' % clas_rep)
+        self.logger.info('{} - Classification Report\n{}'.format(self.name,
+                                                                 clas_rep))
         con_mat_norm = np.around(
             conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis],
             decimals=2)
@@ -155,7 +161,6 @@ class AgeClassifier:
         """
         It creates a file with a plot of the model/network architecture. It
         shows the shapes and the layers if wanted.
-        :param file_path: path where the file will be created
         :param show_shapes: boolean that determines if shapes should be shown
         :param show_layer_names: boolean that determines if layer names should
         be shown
@@ -199,7 +204,7 @@ class AgeClassifier:
         if not save_path:
             save_path = self.fig_path
         fig, axs = plt.subplots(1, 2)
-        fig.set_size_inches(8, 8)
+        fig.set_size_inches(16, 8)
         title_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
                       'size': 18}
         label_font = {'family': 'serif', 'color': 'black', 'weight': 'normal',
