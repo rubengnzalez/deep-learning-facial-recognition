@@ -1,0 +1,135 @@
+name: "deep_learning_facial_recognition"
+data:
+  base_path: "data/"
+  raw_path: "data/raw/"
+  sorted_path: "data/age/"
+  file_name_format: "age_gender_race_datetime.extension"
+  classes_list:
+    - 0_infant
+    - 1_child
+    - 2_young
+    - 3_adult
+    - 4_middle_age
+    - 5_old
+analysis:
+  sample_rows: 1
+  sample_cols: 4
+  figures_path: "figures/"
+preprocess:
+  test_size: 0.2
+  random_state: 42
+  shuffle: True
+  dest_path: "data/age/"
+  criteria: "age"
+  classes_ranges:
+    0_infant:
+      - 1
+      - 3
+    1_child:
+      - 4
+      - 12
+    2_young:
+      - 13
+      - 25
+    3_adult:
+      - 26
+      - 40
+    4_middle_age:
+      - 41
+      - 60
+    5_old:
+      - 61
+      - 120
+model:
+  name: "model-05"
+  models_path: "classifiers/models"
+  weights_path: "classifiers/models"
+  figures_path: "figures/"
+  data_augmentation:
+    training_set:
+      rotation_range: 0.2
+      shear_range: 0.05
+      zoom_range:
+        - 0.95
+        - 1.2
+      horizontal_flip: True
+      target_size:
+        - 64
+        - 64
+      batch_size: 32
+      class_mode: "categorical"
+      shuffle: True
+      seed: 42
+    test_set:
+      target_size:
+        - 64
+        - 64
+      batch_size: 32
+      class_mode: "categorical"
+      shuffle: False
+      seed: 42
+  architecture:
+    input_layer:
+      filters: 32
+      kernel_size:
+        - 3
+        - 3
+      input_shape:
+        - 64
+        - 64
+        - 3
+      activation: "relu"
+      max_pooling:
+        pool_size:
+          - 2
+          - 2
+    hidden_conv2d:
+      - filters: 32
+        kernel_size:
+          - 3
+          - 3
+        activation: "relu"
+        max_pooling:
+          pool_size:
+            - 2
+            - 2
+      - filters: 64
+        kernel_size:
+          - 3
+          - 3
+        activation: "relu"
+        max_pooling:
+          pool_size:
+            - 2
+            - 2
+    #   - filters: 32
+    #     kernel_size:
+    #       - 3
+    #       - 3
+    #     activation: "relu"
+    #     max_pooling:
+    #       pool_size:
+    #         - 2
+    #         - 2
+    hidden_dense:
+      - units: 128
+        activation: "relu"
+        dropout: 0.3
+      - units: 64
+        activation: "relu"
+        dropout: 0.3
+      - units: 6
+        activation: "softmax"
+  compilation:
+    optimizer: "adam"
+    loss: "categorical_crossentropy"
+    metrics:
+      - accuracy
+  training:
+    epochs: 25
+logging:
+  name: "log"
+  file_handler: True
+  level: "INFO"
+  path: "log/"
+  file_name: "facial_recognition_{date}.log"

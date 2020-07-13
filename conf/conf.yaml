@@ -41,16 +41,16 @@ preprocess:
       - 61
       - 120
 model:
-  name: "test-model"
+  name: "model-07"
   models_path: "classifiers/models"
   weights_path: "classifiers/models"
   figures_path: "figures/"
   data_augmentation:
     training_set:
-      rotation_range: 0.3
-      shear_range: 0.1
+      rotation_range: 0.2
+      shear_range: 0.05
       zoom_range:
-        - 0.90
+        - 0.95
         - 1.2
       horizontal_flip: True
       target_size:
@@ -84,7 +84,7 @@ model:
           - 2
           - 2
     hidden_conv2d:
-      - filters: 32
+      - filters: 64
         kernel_size:
           - 3
           - 3
@@ -93,7 +93,7 @@ model:
           pool_size:
             - 2
             - 2
-      - filters: 32
+      - filters: 128
         kernel_size:
           - 3
           - 3
@@ -102,20 +102,23 @@ model:
           pool_size:
             - 2
             - 2
-      - filters: 32
-        kernel_size:
-          - 3
-          - 3
-        activation: "relu"
-        max_pooling:
-          pool_size:
-            - 2
-            - 2
+    #   - filters: 32
+    #     kernel_size:
+    #       - 3
+    #       - 3
+    #     activation: "relu"
+    #     max_pooling:
+    #       pool_size:
+    #         - 2
+    #         - 2
     hidden_dense:
       - units: 128
         activation: "relu"
         dropout: 0.3
       - units: 64
+        activation: "relu"
+        dropout: 0.3
+      - units: 32
         activation: "relu"
         dropout: 0.3
       - units: 6
@@ -126,7 +129,7 @@ model:
     metrics:
       - accuracy
   training:
-    epochs: 2
+    epochs: 25
 logging:
   name: "log"
   file_handler: True
