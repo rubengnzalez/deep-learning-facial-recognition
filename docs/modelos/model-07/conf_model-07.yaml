@@ -41,7 +41,7 @@ preprocess:
       - 61
       - 120
 model:
-  name: "model-07"
+  name: "model-11"
   models_path: "classifiers/models"
   weights_path: "classifiers/models"
   figures_path: "figures/"

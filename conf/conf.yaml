@@ -41,7 +41,7 @@ preprocess:
       - 61
       - 120
 model:
-  name: "model-07"
+  name: "model-12"
   models_path: "classifiers/models"
   weights_path: "classifiers/models"
   figures_path: "figures/"
@@ -129,7 +129,7 @@ model:
     metrics:
       - accuracy
   training:
-    epochs: 25
+    epochs: 35
 logging:
   name: "log"
   file_handler: True

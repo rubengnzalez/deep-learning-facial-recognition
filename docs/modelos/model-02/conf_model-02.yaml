@@ -93,7 +93,7 @@ model:
           pool_size:
             - 2
             - 2
-    #   - filters: 32
+    #   - filters: 64
     #     kernel_size:
     #       - 3
     #       - 3
@@ -114,10 +114,13 @@ model:
     hidden_dense:
       - units: 128
         activation: "relu"
-        # dropout: 0.3
+      #   dropout: 0.4
       # - units: 64
       #   activation: "relu"
-      #   dropout: 0.3
+      #   dropout: 0.4
+      # - units: 32
+      #   activation: "relu"
+      #   dropout: 0.5
       - units: 6
         activation: "softmax"
   compilation:
