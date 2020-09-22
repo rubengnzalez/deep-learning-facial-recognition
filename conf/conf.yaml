@@ -41,7 +41,7 @@ preprocess:
       - 61
       - 120
 model:
-  name: "model-14"
+  name: "model-15"
   models_path: "classifiers/models"
   weights_path: "classifiers/models"
   figures_path: "figures/"
@@ -54,16 +54,16 @@ model:
         - 1.2
       horizontal_flip: True
       target_size:
-        - 64
-        - 64
+        - 128
+        - 128
       batch_size: 32
       class_mode: "categorical"
       shuffle: True
       seed: 42
     test_set:
       target_size:
-        - 64
-        - 64
+        - 128
+        - 128
       batch_size: 32
       class_mode: "categorical"
       shuffle: False
@@ -75,8 +75,8 @@ model:
         - 3
         - 3
       input_shape:
-        - 64
-        - 64
+        - 128
+        - 128
         - 3
       activation: "relu"
       max_pooling:
@@ -84,7 +84,7 @@ model:
           - 2
           - 2
     hidden_conv2d:
-      - filters: 32
+      - filters: 64
         kernel_size:
           - 3
           - 3
@@ -93,7 +93,7 @@ model:
           pool_size:
             - 2
             - 2
-      - filters: 64
+      - filters: 128
         kernel_size:
           - 3
           - 3
@@ -114,10 +114,13 @@ model:
     hidden_dense:
       - units: 128
         activation: "relu"
-        dropout: 0.35
+        dropout: 0.3
       - units: 64
         activation: "relu"
-        dropout: 0.35
+        dropout: 0.3
+      - units: 32
+        activation: "relu"
+        dropout: 0.3
       - units: 6
         activation: "softmax"
   compilation:
@@ -126,7 +129,7 @@ model:
     metrics:
       - accuracy
   training:
-    epochs: 45
+    epochs: 35
 logging:
   name: "log"
   file_handler: True
