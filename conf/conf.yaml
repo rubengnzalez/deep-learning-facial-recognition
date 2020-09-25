@@ -41,7 +41,7 @@ preprocess:
       - 61
       - 120
 model:
-  name: "model-15"
+  name: "model-16"
   models_path: "classifiers/models"
   weights_path: "classifiers/models"
   figures_path: "figures/"
@@ -56,7 +56,7 @@ model:
       target_size:
         - 128
         - 128
-      batch_size: 32
+      batch_size: 64
       class_mode: "categorical"
       shuffle: True
       seed: 42
@@ -64,7 +64,7 @@ model:
       target_size:
         - 128
         - 128
-      batch_size: 32
+      batch_size: 64
       class_mode: "categorical"
       shuffle: False
       seed: 42
@@ -114,13 +114,13 @@ model:
     hidden_dense:
       - units: 128
         activation: "relu"
-        dropout: 0.3
+        dropout: 0.35
       - units: 64
         activation: "relu"
-        dropout: 0.3
+        dropout: 0.35
       - units: 32
         activation: "relu"
-        dropout: 0.3
+        dropout: 0.35
       - units: 6
         activation: "softmax"
   compilation:
@@ -129,7 +129,7 @@ model:
     metrics:
       - accuracy
   training:
-    epochs: 35
+    epochs: 30
 logging:
   name: "log"
   file_handler: True
